@@ -88,10 +88,9 @@ while(1):
 		# prediction from the model. This is so that
 		# the HiFive can run the other functions in between
 		if count%4 == 0:
-			angle = str(int(round(deg))).encode()
-			ser2.write(bytes(angle) + "b\n")
-			print(deg)
-			print(bytes(deg))
+			angle_str = str(int(deg)) + '\n' # convert angle to string
+			ser2.write(angle_str.encode()) # send to HiFiveBoard via UART
+			print(f"Angle: {int(deg))") #print to the console
 			#Your code here. (use ser2)
 
 
