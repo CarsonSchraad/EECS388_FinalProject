@@ -12,14 +12,13 @@ void auto_brake(int devid)
     // Use the directions given in the project document
     uint16_t dist;
     // read an input from lidar sensor and turn on corresponding led
-    if (ser_isready(devid)) {
         if ('Y' == ser_read(0) && 'Y' == ser_read(0)) {
             
             uint8_t dist_L = ser_read(0);
             uint8_t dist_H = ser_read(0);
 
-            dist = dist_L + dist_H * 256;
-
+            dist = (dist_H << 8) | dist_L;
+ 
             if (dist > 200) {
                 gpio_write(RED_LED, OFF);
                 gpio_write(GREEN_LED, ON);
@@ -36,11 +35,10 @@ void auto_brake(int devid)
             else {
                 gpio_write(GREEN_LED, OFF);
                 gpio_write(RED_LED, ON);
-                delay(100);
+                delay(50);
                 gpio_write(RED_LED, OFF);
-                delay(100);
+                delay(50);
             }
-        }
     }
 }
 int read_from_pi(int devid)
@@ -48,12 +46,12 @@ int read_from_pi(int devid)
     // Task-2: 
     // You code goes here (Use Lab 09 for reference)
     // After performing Task-2 at dnn.py code, modify this part to read angle values from Raspberry Pi.
-    int recievedAngle;
-    char inputString[20];
 
+    int recievedAngle;
+    char inputString[10];
 
     if (ser_isready(devid)) {
-        ser_readline(devid, 20, inputString);
+        ser_readline(devid, 10, inputString);
         sscanf(inputString, "%d", &recievedAngle);
         return recievedAngle;
     }
@@ -65,6 +63,7 @@ void steering(int gpio, int pos)
     // Task-3: 
     // Your code goes here (Use Lab 05 for reference)
     // Check the project document to understand the task
+
     #define SERVO_PULSE_MAX 2400
     #define SERVO_PULSE_MIN 544
     #define SERVO_PERIOD 20000
@@ -106,23 +105,23 @@ int main()
         //printf("\nangle=%d", angle) 
 
         int gpio = PIN_19; 
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 5; i++){
             // Here, we set the angle to 180 if the prediction from the DNN is a positive angle
             // and 0 if the prediction is a negative angle.
             // This is so that it is easier to see the movement of the servo.
             // You are welcome to pass the angle values directly to the steering function.
             // If the servo function is written correctly, it should still work,
             // only the movements of the servo will be more subtle
-            //if(angle>0){
-                //steering(gpio, 180);
-            //}
-            //else {
-                //steering(gpio,0);
-            //}
+            if(angle>0){
+                steering(gpio, angle);
+            }
+            else {
+                steering(gpio,0);
+            }
             
             // Uncomment the line below to see the actual angles on the servo.
             // Remember to comment out the if-else statement above!
-            steering(gpio, angle);
+            //steering(gpio, angle);
         }
 
     }
