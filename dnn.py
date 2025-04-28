@@ -82,15 +82,15 @@ while(1):
 		#Feed the frame to the model and get the control output
 		rad = model.predict(img)[0][0]
 		deg = rad2deg(rad)
+		
 
 		# Your code goes here in this if statement
 		# The if condition is used to send every 4th
 		# prediction from the model. This is so that
 		# the HiFive can run the other functions in between
 		if count%4 == 0:
-			angle_str = str(int(deg)) + '\n' # convert angle to string
-			ser2.write(angle_str.encode()) # send to HiFiveBoard via UART
-			print(f"Angle: {int(deg))") #print to the console
+			deg1 = str(int(deg))
+			ser2.write(bytes(deg1 + "\n", "utf-8"))
 			#Your code here. (use ser2)
 
 
